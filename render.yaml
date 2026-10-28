@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     branch: main
-    buildCommand: npm install --include=dev && npm test && npm run build
+    buildCommand: npm ci --include=dev && npm test && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
     envVars:
@@ -12,3 +12,5 @@ services:
         value: 22.22.0
       - key: NEXT_TELEMETRY_DISABLED
         value: "1"
+      - key: DATABASE_URL
+        sync: false
