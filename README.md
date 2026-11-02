@@ -16,13 +16,7 @@ Para criar manualmente em **New → Web Service**:
 - Health check: `/api/health`
 - `NODE_VERSION`: `22.22.0`
 
-O servidor consulta diretamente o PostgreSQL do Supabase; não usa as APIs dos outros dashboards. Os links dos indicadores continuam disponíveis. A porta é fornecida pelo Render em `PORT`.
-
-Configure `DATABASE_URL` com a conexão de **Supabase → Connect → Session pooler**, incluindo a senha (caracteres reservados devem ser codificados na URL). Se as tabelas estiverem em projetos diferentes, configure `SLA_DATABASE_URL`, `T0_DATABASE_URL`, `CAPOTAMENTO_DATABASE_URL` e `SHIPPING_DATABASE_URL`. Cada variável específica substitui a conexão padrão. Use somente variáveis de servidor, nunca `NEXT_PUBLIC_`.
-
-A conexão verifica TLS. Se necessário, forneça o certificado CA do projeto em `DATABASE_CA_CERT`. As sessões são somente leitura, com até três conexões por banco e timeout de consulta de 25 segundos. Nenhuma tabela ou política é alterada.
-
-A integração pressupõe as tabelas e colunas dos quatro repositórios originais no schema padrão. Resolve um único RM com a palavra Orlean no período. Os resultados dos cards e S/C compartilham cache por processo de três minutos, incluindo requisições simultâneas; erros não são armazenados. Enquanto a conexão não estiver configurada, a rota usa o painel anterior (source: dashboard). Com conexão configurada, usa exclusivamente SQL (source: database), inclusive se o banco retornar erro. Após reinício, a primeira consulta recalcula os resultados.
+A Central consulta o PostgreSQL da VM pelo endpoint HTTPS `POST /query` da API J&T. Em Environment no Render, configure `JT_API_KEY` com a mesma chave usada pelo importador T0. O endereço padrão de `JT_API_URL` é `https://jt-api.rockettechbr.com.br`. A resposta de /api/indicator informa `source: jt-api`. Os períodos e S/C compartilham cache de três minutos.
 
 Esta versão no Render não usa o login do ChatGPT: o serviço web padrão permite acesso a quem tiver o link.
 
