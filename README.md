@@ -22,7 +22,7 @@ Configure `DATABASE_URL` com a conexão de **Supabase → Connect → Session po
 
 A conexão verifica TLS. Se necessário, forneça o certificado CA do projeto em `DATABASE_CA_CERT`. As sessões são somente leitura, com até três conexões por banco e timeout de consulta de 25 segundos. Nenhuma tabela ou política é alterada.
 
-A integração pressupõe as tabelas e colunas dos quatro repositórios originais no schema padrão. Resolve um único RM com a palavra Orlean no período. Os resultados dos cards e S/C compartilham cache por processo de três minutos, incluindo requisições simultâneas; erros não são armazenados. Não há fallback para os painéis no Render. Após reinício, a primeira consulta recalcula os resultados.
+A integração pressupõe as tabelas e colunas dos quatro repositórios originais no schema padrão. Resolve um único RM com a palavra Orlean no período. Os resultados dos cards e S/C compartilham cache por processo de três minutos, incluindo requisições simultâneas; erros não são armazenados. Enquanto a conexão não estiver configurada, a rota usa o painel anterior (source: dashboard). Com conexão configurada, usa exclusivamente SQL (source: database), inclusive se o banco retornar erro. Após reinício, a primeira consulta recalcula os resultados.
 
 Esta versão no Render não usa o login do ChatGPT: o serviço web padrão permite acesso a quem tiver o link.
 
