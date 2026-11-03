@@ -21,4 +21,18 @@ for(const [kind,day,month] of [['sla',50,200/3],['t0',70,70],['capotamento',50,5
  assert.ok(!r.sc.rows.some(x=>x.name==='Fora'));
  console.log(kind+': actual SQL executed, weighted values and Orlean scope passed');
 }
+await db.exec(`
+CREATE TABLE sem_mov_retidos_detalhe(indicador text,data date,rm text,sc text,aging_valor int,pedidos int);
+INSERT INTO sem_mov_retidos_detalhe VALUES
+('sem_mov','2026-10-27','Orlean','Ana',3,100),('sem_mov','2026-10-27','Orlean','Ana',10,5),
+('sem_mov','2026-10-27','Orlean','Bia',11,9),('sem_mov','2026-10-27','Outro','Fora',15,100),
+('retidos','2026-10-27','Orlean','Bia',4,2),('retidos','2026-10-26','Orlean','Bia',12,7);`);
+for(const [kind,day,overTen,month] of [['sem_mov',14,9,14],['retidos',2,0,9]]){
+ const result=await readDirect(kind,now,query);
+ assert.equal(result.indicator.day.value,day);
+ assert.equal(result.indicator.day.q10,overTen);
+ assert.equal(result.indicator.month.value,month);
+ assert.equal(result.sc.rows[0].name,'Bia');
+ assert.equal(result.indicator.comparison.previousDay.value,null);
+}
 await db.close();
