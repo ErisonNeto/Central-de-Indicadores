@@ -65,15 +65,23 @@ console.log('Direct SQL adapter: weights, roles, scope, periods, errors and cach
 
 // Monday versus Monday, including a month boundary and unequal volumes.
 const weekly=await readDirect('t0',new Date('2026-11-03T12:00:00Z'),async(_,sql,params)=>{
- assert.equal(params[0],'2026-10-20');
+ assert.equal(params[0],'2026-10-26');
  if(sql.includes('DISTINCT rm'))return [{rm:'Orlean'}];
  return [['2026-10-20',90,90],['2026-10-26',10,5],['2026-11-02',20,15]]
   .map(([data,total,ok])=>({data,total,ok,sc:'A'}));
 });
 assert.equal(weekly.indicator.comparison.previousDay.to,'2026-10-26');
 assert.equal(weekly.indicator.comparison.previousDay.value,50);
-assert.equal(weekly.indicator.comparison.previousWeek.value,95);
+assert.equal(weekly.indicator.comparison.previousWeek.value,50);
 assert.equal(weekly.indicator.comparison.week.value,75);
 assert.equal(weekly.indicator.comparison.week.days,1);
 assert.equal(weekly.indicator.month.value,75);
 assert.equal(empty.indicator.comparison.previousDay.value,null);
+
+assert.equal(weekly.indicator.comparison.previousWeek.to,'2026-11-01');
+assert.equal(weekly.indicator.comparison.week.from,'2026-11-02');
+const onMonday=await readDirect('t0',new Date('2026-11-02T12:00:00Z'),async(_,sql)=>sql.includes('DISTINCT rm')?[{rm:'Orlean'}]:[{data:'2026-11-01',sc:'A',total:10,ok:8}]);
+assert.equal(onMonday.indicator.comparison.previousWeek.from,'2026-10-26');
+assert.equal(onMonday.indicator.comparison.previousWeek.to,'2026-11-01');
+assert.equal(onMonday.indicator.comparison.previousWeek.value,80);
+assert.equal(onMonday.indicator.comparison.week.value,null);
