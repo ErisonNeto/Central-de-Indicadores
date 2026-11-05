@@ -38,3 +38,9 @@ npm run dev
 - Datas: America/Sao_Paulo. Mês até ontem. Atualização de 5 em 5 minutos e ao abrir os S/C.
 
 Dados indisponíveis não são convertidos em zero. Os testes cobrem respostas simuladas e executam as consultas SQL em PostgreSQL embarcado (PGlite), com dados de teste. A conferência das tabelas, permissões e resultados reais no Supabase precisa ser feita antes de ativar esta versão em produção. Arquivos de infraestrutura do ChatGPT e credenciais não fazem parte deste repositório.
+
+## Qualidade 1BD e 5CD
+
+A Central consulta `jt_1bd_registros`, `jt_5cd_registros` e `jt_1bd_gestao` pela mesma API J&T autenticada. As tabelas precisam estar disponíveis nessa API. O vínculo de bases usa `base_chave` e o RM exato de Orlean na gestão atual.
+
+Referência D-2 em São Paulo. Semanas de segunda a domingo relativas ao dia de referência, mês até D-2. 1BD usa soma de `entregue` / avaliações, com referência de 80%. 5CD usa contagem diária e média dos snapshots disponíveis nos períodos, sem meta percentual. Cards e S/C incluem D-7 e semana anterior.

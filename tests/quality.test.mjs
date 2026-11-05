@@ -1,0 +1,33 @@
+import assert from 'node:assert/strict';
+import {PGlite} from '@electric-sql/pglite';
+import {readDirect} from '../lib/direct.js';
+const db=new PGlite();
+await db.exec(`CREATE TABLE jt_1bd_gestao(base_chave text PRIMARY KEY,rm text,sc text,tipo_sc text);
+CREATE TABLE jt_1bd_registros(data_avaliacao text,base_chave text,entregue integer);
+CREATE TABLE jt_5cd_registros(data_relatorio text,base_chave text);
+INSERT INTO jt_1bd_gestao VALUES ('a','ORLEAN DA SILVA DO NASCIMENTO','Ana','Coordenador'),('b','ORLEAN DA SILVA DO NASCIMENTO','Beto','Supervisor'),('x','OUTRO','Fora','S/C');
+INSERT INTO jt_1bd_registros VALUES ('2026-11-03','a',1),('2026-11-03','a',0),('2026-11-03','b',1),('2026-11-02','a',1),('2026-10-27','a',0),('2026-11-03','x',0);
+INSERT INTO jt_5cd_registros VALUES ('2026-11-03','a'),('2026-11-03','a'),('2026-11-03','b'),('2026-11-02','b'),('2026-10-27','a'),('2026-11-03','x');`);
+const query=async(_,sql,args)=>(await db.query(sql,args)).rows;
+const now=new Date('2026-11-05T15:00:00Z');
+const a=await readDirect('1bd',now,query),b=await readDirect('5cd',now,query);
+assert.equal(a.indicator.periods.reference,'2026-11-03');
+assert.equal(a.indicator.day.value,200/3);
+assert.equal(a.indicator.month.value,75);
+assert.equal(a.indicator.day.goal,80);
+assert.equal(a.sc.rows[0].name,'Ana');
+assert.equal(a.sc.rows[0].previousDay.value,0);
+assert.equal(a.indicator.comparison.previousWeek.from,'2026-10-26');
+assert.equal(a.indicator.comparison.previousWeek.to,'2026-11-01');
+assert.equal(b.indicator.day.value,3);
+assert.equal(b.indicator.month.value,2); // average snapshots, not sum 4
+assert.equal(b.sc.rows[0].name,'Ana');
+assert.equal(b.sc.rows[0].month.value,1); // includes zero on Nov 2
+assert.equal(b.indicator.day.goal,null);
+const empty=await readDirect('5cd',new Date('2026-12-10T15:00Z'),query);
+assert.equal(empty.indicator.day.value,null);
+const boundary=await readDirect('1bd',new Date('2026-11-02T15:00Z'),query);
+assert.equal(boundary.indicator.periods.start,'2026-10-01');
+assert.equal(boundary.indicator.periods.reference,'2026-10-31');
+await db.close();
+console.log('Quality SQL: D-2, scope, weights, calendar weeks, S/C, snapshot means and missing dates passed.');
