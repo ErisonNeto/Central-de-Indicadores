@@ -10,7 +10,7 @@
     "dev": "next dev --hostname 0.0.0.0",
     "build": "next build --webpack",
     "start": "node scripts/start.mjs",
-    "test": "node tests/sc.test.mjs && node tests/direct.test.mjs && node tests/sql.test.mjs && node tests/quality.test.mjs"
+    "test": "node tests/sc.test.mjs && node tests/direct.test.mjs && node tests/sql.test.mjs && node tests/quality.test.mjs && node tests/claims.test.mjs"
   },
   "dependencies": {
     "lucide-react": "1.31.0",

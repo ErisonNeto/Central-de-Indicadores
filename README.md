@@ -44,3 +44,7 @@ Dados indisponíveis não são convertidos em zero. Os testes cobrem respostas s
 A Central consulta `jt_1bd_registros`, `jt_5cd_registros` e `jt_1bd_gestao` pela mesma API J&T autenticada. As tabelas precisam estar disponíveis nessa API. O vínculo de bases usa `base_chave` e o RM exato de Orlean na gestão atual.
 
 Referência D-2 em São Paulo. Semanas de segunda a domingo relativas ao dia de referência, mês até D-2. 1BD usa soma de `entregue` / avaliações, com referência de 80%. 5CD usa contagem diária e média dos snapshots disponíveis nos períodos, sem meta percentual. Cards e S/C incluem D-7 e semana anterior.
+
+## Avaria, Extravio e PNR
+
+Consulta direta à tabela `public.jt_arbitragem_ocorrencias` via API J&T. Cada card apresenta quantidade e valor dos estados Processo encerrado e Arbitragem finalizada. Demais estados aparecem separadamente em conferência, sem classificação de meta. A data é fechamento, com fallback para declaração e data legada. Semanas fixas de segunda a domingo, semana e mês atuais parciais até hoje. S/C ordenados pelo maior valor finalizado na semana, com desempate pelo mês. Funções não são somáveis entre si. Períodos sem registros não são tratados como zero comprovado.

@@ -1,5 +1,6 @@
 'use client';
 import {useEffect,useState} from 'react';
+import {ClaimsSc} from './claims-view';
 import {Users,RefreshCw,ArrowUpRight} from 'lucide-react';
 const options=[{id:'1bd',name:'1BD',unit:'%',url:'https://j-t-1bd-5cd-csat.onrender.com/'},{id:'5cd',name:'5CD',unit:' remessas',url:'https://j-t-1bd-5cd-csat.onrender.com/'},{id:'sla',name:'SLA',unit:'%',url:'https://jandt-sla-dashboard.onrender.com/'},{id:'t0',name:'T0',unit:'%',url:'https://j-t-t0.onrender.com/'},{id:'shipping',name:'Shipping Time',unit:'h',url:'https://j-t-shippingtime.onrender.com/'},{id:'capotamento',name:'Capotamento',unit:'%',url:'https://j-t-capotamento.onrender.com/'}];
 const f=(v:number)=>v.toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:2});
@@ -19,6 +20,7 @@ export default function ScSection({kind}:{kind:string}){
  useEffect(()=>{let active=true;setLoading(true);setData(null);fetch('/api/sc?kind='+kind,{cache:'no-store'}).then(r=>r.json()).then(d=>{if(active)setData(d)}).catch(()=>{if(active)setData({error:'Não foi possível consultar os responsáveis.'})}).finally(()=>{if(active)setLoading(false)});return()=>{active=false}},[kind,revision]);
  const selected=options.find(x=>x.id===kind)!;
  const rows=(data?.rows||[]).filter((r:any)=>(r.name+' '+r.role).toLocaleLowerCase('pt-BR').includes(query.toLocaleLowerCase('pt-BR')));
+ if(['avaria','extravio','pnr'].includes(kind))return <ClaimsSc data={data} loading={loading} rows={rows}/>;
  if(kind==='sem_mov'||kind==='retidos') {
   const cell=(entry:any)=>entry?entry.value.toLocaleString('pt-BR')+' / '+entry.q10.toLocaleString('pt-BR'):'—';
   return <section className="sc-section"><h3>Pacotes por S/C</h3><p>Acima de 3 dias / acima de 10 dias · maior volume acima de 3 dias primeiro.</p>
