@@ -48,3 +48,7 @@ Referência D-2 em São Paulo. Semanas de segunda a domingo relativas ao dia de 
 ## Avaria, Extravio e PNR
 
 Consulta direta à tabela `public.jt_arbitragem_ocorrencias` via API J&T. Cada card apresenta quantidade e valor dos estados Processo encerrado e Arbitragem finalizada. Demais estados aparecem separadamente em conferência, sem classificação de meta. A data é fechamento, com fallback para declaração e data legada. Semanas fixas de segunda a domingo, semana e mês atuais parciais até hoje. S/C ordenados pelo maior valor finalizado na semana, com desempate pelo mês. Funções não são somáveis entre si. Períodos sem registros não são tratados como zero comprovado.
+
+## Recorte da equipe
+
+Darley Wallace Cunha Quaresma (Middle Mile) é excluído dos 11 indicadores da Central antes das agregações, usando os campos de responsáveis disponíveis em cada origem. A comparação do nome completo ignora maiúsculas e espaços repetidos. Registros vinculados a ele como coordenador, supervisor ou S/C não entram nos totais nem nos históricos. O cruzamento de bases do Shipping também usa o SLA filtrado. Nenhum registro é apagado do banco. Indicadores externos mantêm seus próprios filtros.

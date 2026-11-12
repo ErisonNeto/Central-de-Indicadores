@@ -8,6 +8,7 @@ CREATE TABLE jt_5cd_registros(data_relatorio text,base_chave text);
 INSERT INTO jt_1bd_gestao VALUES ('a','ORLEAN DA SILVA DO NASCIMENTO','Ana','Coordenador'),('b','ORLEAN DA SILVA DO NASCIMENTO','Beto','Supervisor'),('x','OUTRO','Fora','S/C');
 INSERT INTO jt_1bd_registros VALUES ('2026-11-03','a',1),('2026-11-03','a',0),('2026-11-03','b',1),('2026-11-02','a',1),('2026-10-27','a',0),('2026-11-03','x',0);
 INSERT INTO jt_5cd_registros VALUES ('2026-11-03','a'),('2026-11-03','a'),('2026-11-03','b'),('2026-11-02','b'),('2026-10-27','a'),('2026-11-03','x');`);
+await db.exec('ALTER TABLE jt_1bd_gestao ADD COLUMN coordenador text; ALTER TABLE jt_1bd_gestao ADD COLUMN supervisor text;');
 const query=async(_,sql,args)=>(await db.query(sql,args)).rows;
 const now=new Date('2026-11-05T15:00:00Z');
 const a=await readDirect('1bd',now,query),b=await readDirect('5cd',now,query);
