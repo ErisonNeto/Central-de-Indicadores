@@ -52,3 +52,15 @@ Consulta direta à tabela `public.jt_arbitragem_ocorrencias` via API J&T. Cada c
 ## Recorte da equipe
 
 Darley Wallace Cunha Quaresma (Middle Mile) é excluído dos 11 indicadores da Central antes das agregações, usando os campos de responsáveis disponíveis em cada origem. A comparação do nome completo ignora maiúsculas e espaços repetidos. Registros vinculados a ele como coordenador, supervisor ou S/C não entram nos totais nem nos históricos. O cruzamento de bases do Shipping também usa o SLA filtrado. Nenhum registro é apagado do banco. Indicadores externos mantêm seus próprios filtros.
+
+## Aba Mensal por S/C
+
+A aba **Indicadores** permanece como visualização inicial. A nova aba **Mensal por S/C** consulta `/api/monthly?kind=...&month=YYYY-MM` sob demanda, com três consultas simultâneas no cliente e cache de três minutos por indicador/mês no servidor. Atualiza a cada cinco minutos e não depende dos painéis externos. As consultas usam a mesma API J&T, filtros de Orlean e exclusão de Middle Mile já existentes.
+
+Cada fonte é lida uma vez para o mês (Shipping também lê o vínculo de bases no SLA), e os acumulados de cada dia são calculados em memória usando as agregações ponderadas existentes. Percentuais mostram diferenças em pontos percentuais; outras unidades mostram diferença absoluta e percentual relativo quando a base anterior não é zero. A comparação diária só existe quando os dois dias consecutivos possuem registros. Em dias sem novos registros, mantém-se o acumulado anterior com data explícita, sem alegar movimento zero. O histórico completo é acessível clicando na célula.
+
+O mês atual fecha em D-1, exceto Qualidade em D-2. Meses anteriores usam o mês completo, respeitada a mesma defasagem. O mês nunca inclui dias de outro mês, inclusive nos primeiros dias do calendário. Nomes completos são conciliados sem acento, caixa ou espaços repetidos; duplicidades de função na mesma fonte são sinalizadas como ambíguas, nunca somadas. S/C sem valores no mês não entram na lista daquela fonte. Falhas são isoladas por indicador; respostas do banco e credenciais permanecem no servidor.
+
+As metas e unidades são as vigentes no projeto, não as simuladas no HTML de teste: SLA 97%, T0 70%, 1BD 80% e Capotamento 0%. Shipping e 5CD não têm meta. Sem Mov e Retidos mantêm contagens de snapshots acima de 3 e 10 dias, sem taxa percentual. Avaria, Extravio e PNR mantêm valor finalizado/quantidade e conferência separada, sem meta nem PPM; seus valores mensais nesta aba fecham em D-1. O CSAT aparece como **não integrado**. Pontuação, alteração de metas e novos denominadores não fazem parte desta entrega.
+
+Validação: testes SQL com PGlite para ponderação, calendário, lacunas, snapshots, arbitragem, nomes e exclusão de Middle Mile; testes anteriores preservados; build TypeScript/Next. Não houve consulta autenticada à produção durante esta alteração. A prévia visual no navegador não pôde ser executada porque o serviço de preview injeta flags `--host`/`--strictPort` incompatíveis com `next dev`.

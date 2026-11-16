@@ -1,6 +1,7 @@
 import {PGlite} from '@electric-sql/pglite';
 import assert from 'node:assert/strict';
 import {readDirect} from '../lib/direct.js';
+import {monthlyResults} from '../lib/monthly.js';
 import {teamScope} from '../lib/team-scope.js';
 const db=new PGlite();
 await db.exec(`
@@ -35,6 +36,7 @@ const kinds=['sla','t0','capotamento','shipping','sem_mov','retidos','1bd','5cd'
 const query=async(_,sql,params)=>(await db.query(sql,params)).rows;
 const clean=r=>JSON.parse(JSON.stringify(r,(k,v)=>k==='checkedAt'?undefined:v));
 const baseline={};for(const k of kinds)baseline[k]=clean(await readDirect(k,now,query));
+const monthlyBaseline={};for(const k of kinds)monthlyBaseline[k]=clean(await monthlyResults(k,'2026-11',now,query));
 await seed('  darley  wallace\tCUNHA\nQUARESMA  ',99);
 for(const k of kinds){assert.deepEqual(clean(await readDirect(k,now,query)),baseline[k],k+' must exclude all Darley totals/history/S/C');}
 // Supervisor assignment must also remove the record, including a shared coordinator.
@@ -44,5 +46,6 @@ UPDATE jt_arbitragem_ocorrencias SET supervisor=coordenador,coordenador='Ana' WH
 UPDATE jt_1bd_gestao SET supervisor=sc,sc='Ana',coordenador='Ana' WHERE base_chave='99';
 UPDATE shipping_time_diario SET sc='Ana' WHERE codigo_base=99;`);
 for(const k of kinds)assert.deepEqual(clean(await readDirect(k,now,query)),baseline[k],k+' supervisor and Shipping base scope');
+for(const k of kinds)assert.deepEqual(clean(await monthlyResults(k,'2026-11',now,query)),monthlyBaseline[k],k+' monthly history excludes Middle Mile');
 assert.throws(()=>teamScope('sc; DELETE'),/inválida/);
 await db.close();console.log('Middle Mile exclusion passed for all 11 indicators, totals, historical periods, roles, nulls and Shipping base mapping.');
