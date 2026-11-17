@@ -90,7 +90,7 @@ export default function MonthlySc() {
       setUpdated("");
       loadedMonth.current = month;
     }
-    const queue = monthlyMetrics.filter((m) => m.id !== "csat");
+    const queue = monthlyMetrics;
     async function worker() {
       while (queue.length && !abort.signal.aborted) {
         const metric = queue.shift()!;
@@ -241,7 +241,6 @@ export default function MonthlySc() {
           Pior → melhor
           <select value={sort} onChange={(e) => setSort(e.target.value)}>
             {monthlyMetrics
-              .filter((m) => m.id !== "csat")
               .map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.name}
@@ -288,7 +287,6 @@ export default function MonthlySc() {
                   }
                 >
                   <button
-                    disabled={m.id === "csat"}
                     onClick={() => setSort(m.id)}
                   >
                     {m.name}
@@ -306,9 +304,7 @@ export default function MonthlySc() {
                         : date(data[m.id].range.start) +
                           " – " +
                           date(data[m.id].range.end)
-                      : m.id === "csat"
-                        ? "Não integrado"
-                        : loading
+                      : loading
                           ? "Consultando…"
                           : "Sem dados"}
                   </small>
@@ -348,19 +344,20 @@ export default function MonthlySc() {
                             ? "Responsável ambíguo"
                             : data[m.id]?.error
                               ? "Consulta indisponível"
-                              : !data[m.id] && m.id !== "csat"
+                              : !data[m.id]
                                 ? loading
                                   ? "Consultando…"
                                   : "Sem dados"
-                                : m.id === "csat"
-                                  ? "Não integrado"
-                                  : status(p, m)}
+                                : status(p, m)}
                         </span>
                         {p?.value != null && (
                           <>
                             <Variation point={p} m={m} />
                             {m.unit === "BRL" && (
                               <small>{p.count} ocorrências finalizadas</small>
+                            )}
+                            {m.id === "csat" && p.count != null && (
+                              <small>{Number(p.positives).toLocaleString("pt-BR")} positivas · {Number(p.negatives).toLocaleString("pt-BR")} negativas</small>
                             )}
                             {p.q10 != null && (
                               <small>

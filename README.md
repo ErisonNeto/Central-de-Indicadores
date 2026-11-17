@@ -64,3 +64,9 @@ O mês atual fecha em D-1, exceto Qualidade em D-2. Meses anteriores usam o mês
 As metas e unidades são as vigentes no projeto, não as simuladas no HTML de teste: SLA 97%, T0 70%, 1BD 80% e Capotamento 0%. Shipping e 5CD não têm meta. Sem Mov e Retidos mantêm contagens de snapshots acima de 3 e 10 dias, sem taxa percentual. Avaria, Extravio e PNR mantêm valor finalizado/quantidade e conferência separada, sem meta nem PPM; seus valores mensais nesta aba fecham em D-1. O CSAT aparece como **não integrado**. Pontuação, alteração de metas e novos denominadores não fazem parte desta entrega.
 
 Validação: testes SQL com PGlite para ponderação, calendário, lacunas, snapshots, arbitragem, nomes e exclusão de Middle Mile; testes anteriores preservados; build TypeScript/Next. Não houve consulta autenticada à produção durante esta alteração. A prévia visual no navegador não pôde ser executada porque o serviço de preview injeta flags `--host`/`--strictPort` incompatíveis com `next dev`.
+
+## CSAT na Central
+
+O card CSAT e a aba Mensal por S/C consultam `public.jt_csat_registros` diretamente pela JT API (`/query`), sem replicar avaliações ou expor tickets/tracking. A tabela deve existir no PostgreSQL `jt_indicadores`, com permissão SELECT para a conta da API.
+
+Taxa = avaliações positivas (`avaliacao=1`) / total (`0` e `1`). Dia e mês seguem data da avaliação (coluna H), referência D-2. Semanas oficiais por `semana_id` da coluna D, independentemente da semana da coluna H. Sem meta definida: dados ausentes aparecem como indisponíveis, nunca 0%. Escopo R/M Orlean com exclusão Darley/Middle Mile e S/C registrado na importação.

@@ -17,6 +17,12 @@ const options = [
     url: "https://j-t-1bd-5cd-csat.onrender.com/",
   },
   {
+    id: "csat",
+    name: "CSAT",
+    unit: "%",
+    url: "https://j-t-1bd-5cd-csat.onrender.com/",
+  },
+  {
     id: "sla",
     name: "SLA",
     unit: "%",
@@ -79,6 +85,9 @@ function Result({
             ? "● Atingiu"
             : "● Não atingiu"}
       </span>
+      {item.positives !== undefined && (
+        <small>{Number(item.positives).toLocaleString('pt-BR')} positivas · {Number(item.negatives).toLocaleString('pt-BR')} negativas</small>
+      )}
       {item.alerts !== undefined && (
         <small className="cap-counts">
           {item.alerts} alerta · {item.cap} capotadas
@@ -87,7 +96,7 @@ function Result({
     </div>
   );
 }
-function HistoryHeaders({ comparison }: { comparison: any }) {
+function HistoryHeaders({ comparison, csat = false }: { comparison: any; csat?: boolean }) {
   const date = (iso?: string) =>
     iso ? iso.slice(8, 10) + "/" + iso.slice(5, 7) : "";
   return (
@@ -98,12 +107,9 @@ function HistoryHeaders({ comparison }: { comparison: any }) {
         <small>{date(comparison?.previousDay?.to)}</small>
       </th>
       <th scope="col">
-        Semana passada · seg a dom
+        {csat ? 'Semana oficial anterior' : 'Semana passada · seg a dom'}
         <br />
-        <small>
-          {date(comparison?.previousWeek?.from)} –{" "}
-          {date(comparison?.previousWeek?.to)}
-        </small>
+        <small>{csat ? (comparison?.previousWeek?.weekId || '—') : <>{date(comparison?.previousWeek?.from)} –{' '}{date(comparison?.previousWeek?.to)}</>}</small>
       </th>
     </>
   );
@@ -324,11 +330,11 @@ export default function ScSection({ kind }: { kind: string }) {
                   <tr>
                     <th scope="col">Responsável</th>
                     <th scope="col">
-                      {kind === "1bd" || kind === "5cd"
+                      {kind === "1bd" || kind === "5cd" || kind === "csat"
                         ? "Referência D-2"
                         : "Ontem"}
                     </th>
-                    <HistoryHeaders comparison={data?.comparison} />
+                    <HistoryHeaders comparison={data?.comparison} csat={kind === 'csat'} />
                     <th scope="col">
                       {kind === "5cd"
                         ? "Média diária do mês"
@@ -395,6 +401,8 @@ export default function ScSection({ kind }: { kind: string }) {
       <p className="sc-footnote">
         {kind === "5cd"
           ? "Média por dia com relatório, incluindo zero para S/C sem ocorrências em um dia disponível. Sem meta fixa."
+          : kind === "csat"
+            ? "Avaliações positivas / todas as avaliações. Semana oficial pela coluna D; data diária pela coluna H. Sem meta definida."
           : kind === "1bd"
             ? "Taxa sobre todas as avaliações do período. Referência D-2."
             : kind === "shipping"

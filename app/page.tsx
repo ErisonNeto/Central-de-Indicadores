@@ -92,6 +92,15 @@ const panels = [
     note: "Referência D-2 · menor é melhor · semana e mês exibem média por dia com relatório, sem meta fixa",
   },
   {
+    id: "csat",
+    title: "CSAT",
+    label: "Satisfação do cliente · avaliações TikTok",
+    icon: Target,
+    url: "https://j-t-1bd-5cd-csat.onrender.com/",
+    unit: "%",
+    note: "Referência D-2 · avaliações positivas / total · semana oficial da coluna D · sem meta definida",
+  },
+  {
     id: "avaria",
     title: "Avaria",
     label: "Ocorrências finalizadas · valor e quantidade",
@@ -167,6 +176,9 @@ function Metric({
                 ? "● Fora da meta"
                 : data.info || "● Sem meta cadastrada"}
       </div>
+      {has && data.positives !== undefined && (
+        <small>{Number(data.positives).toLocaleString('pt-BR')} positivas · {Number(data.negatives).toLocaleString('pt-BR')} negativas</small>
+      )}
       {has && data.alerts !== undefined && (
         <small className="cap-counts">
           {data.alerts} em alerta · {data.cap} capotadas
@@ -191,6 +203,7 @@ type Sample = {
   value: number | null;
   days: number;
   elapsed?: number;
+  weekId?: string;
 };
 function Change({
   current,
@@ -224,12 +237,12 @@ function HistoryTile({
   unit: string;
   previous?: Sample;
 }) {
-  const single = sample.from === sample.to && sample.elapsed === undefined;
+  const single = sample.from === sample.to && sample.elapsed === undefined && !sample.weekId;
   return (
     <div className="period-tile">
       <span className="period-label">{label}</span>
       <small>
-        {sample.elapsed === 0
+        {sample.weekId ? "Semana oficial " + sample.weekId : sample.elapsed === 0
           ? "A partir de " + date(sample.from)
           : single
             ? date(sample.to)
@@ -240,7 +253,7 @@ function HistoryTile({
         {sample.value != null && <span>{unit}</span>}
       </div>
       {sample.value == null && <small>Sem dados</small>}
-      {!single && (
+      {!single && !sample.weekId && (
         <small>
           {sample.elapsed === 0
             ? "Aguardando o primeiro dia fechado"
@@ -546,7 +559,7 @@ export default function Home() {
                             <div className="period-grid">
                               <div className="period-tile">
                                 <span className="period-label">
-                                  {p.id === "1bd" || p.id === "5cd"
+                                  {p.id === "1bd" || p.id === "5cd" || p.id === "csat"
                                     ? "Referência D-2"
                                     : "Ontem"}{" "}
                                   {d?.periods && date(d.periods.yesterday)}
@@ -574,7 +587,9 @@ export default function Home() {
                                   />
                                   <HistoryTile
                                     label={
-                                      p.id === "1bd" || p.id === "5cd"
+                                      p.id === "csat"
+                                        ? "Última semana oficial"
+                                        : p.id === "1bd" || p.id === "5cd"
                                         ? "Semana até D-2"
                                         : "Semana atual até ontem"
                                     }
@@ -583,7 +598,7 @@ export default function Home() {
                                     unit={p.unit}
                                   />
                                   <HistoryTile
-                                    label="Semana passada · seg a dom"
+                                    label={p.id === "csat" ? "Semana oficial anterior" : "Semana passada · seg a dom"}
                                     sample={d.comparison.previousWeek}
                                     unit={p.unit}
                                   />
@@ -684,8 +699,8 @@ export default function Home() {
                       Uma visão rápida para decidir onde olhar.
                     </h2>
                     <p>
-                      Os cards atualizam a cada 5 minutos. Qualidade 1BD e 5CD
-                      usa D-2; Avaria, Extravio e PNR incluem a semana e o mês
+                      Os cards atualizam a cada 5 minutos. Qualidade 1BD, 5CD e CSAT
+                      usam D-2; Avaria, Extravio e PNR incluem a semana e o mês
                       até hoje. Os demais indicadores usam ontem. Abra o
                       indicador para explorar bases, equipes e detalhes.
                     </p>
