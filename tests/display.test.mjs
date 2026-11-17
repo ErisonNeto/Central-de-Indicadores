@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {displayChange} from '../lib/display-change.js';
+assert.equal(displayChange(-0.0001,'p.p.'),'↓ menos de 0,01 p.p.');
+assert.equal(displayChange(0.0001,'p.p.'),'↑ menos de 0,01 p.p.');
+assert.equal(displayChange(0,'p.p.'),'= 0 p.p.');
+assert.equal(displayChange(-0.18,'p.p.'),'↓ −0,18 p.p.');
+assert.equal(displayChange(1.95,'%'),'↑ +1,95 %');
+assert.equal(displayChange(Infinity,'%'),null);
+assert.equal(displayChange(null,'%'),null);
+console.log('Display: small deltas, signs, exact zero and invalid values passed.');
