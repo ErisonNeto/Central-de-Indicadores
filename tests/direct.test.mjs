@@ -14,12 +14,12 @@ async function read(kind,data,mapping=[]){
  return {...result,calls};
 }
 const sla=await read('sla',[
- {data:'2026-10-26',coordenador:'A',supervisor:'B',pedidos:90,sla:1},
- {data:'2026-10-27',coordenador:'A',supervisor:'B',pedidos:10,sla:0}]);
+ {data:'2026-10-26',sc:'A',pedidos:90,sla:1},
+ {data:'2026-10-27',sc:'A',pedidos:10,sla:0}]);
 assert.equal(sla.indicator.month.value,90);
 assert.equal(sla.indicator.day.value,0);
 assert.equal(sla.indicator.month.goal,97);
-assert.equal(sla.sc.rows.length,2);
+assert.equal(sla.sc.rows.length,1);
 assert.equal(sla.calls.length,2);
 const cap=await read('capotamento',[
  {data:'2026-10-27',coordenador:'Pricila',status_risco:'ALERTA'},

@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import {readDirect} from '../lib/direct.js';
 const db=new PGlite();
 await db.exec(`
-CREATE TABLE entregas(data_sla date, codigo_base int, rm text, coordenador text, supervisor text,no_prazo bool);
-INSERT INTO entregas VALUES ('2026-10-27',1,'Orlean','Ana','Bia',true),('2026-10-27',1,'Orlean','Ana','Bia',false),('2026-10-26',2,'Orlean','Ana','Bia',true),('2026-10-27',3,'Outro','Fora',null,true);
+CREATE TABLE sla_resumo_diario(data_sla date,codigo_base int,rm text,sc text,qtd_a_entregar integer,qtd_no_prazo integer);
+INSERT INTO sla_resumo_diario VALUES ('2026-10-27',1,'Orlean','Ana',2,1),('2026-10-26',2,'Orlean','Ana',1,1),('2026-10-27',3,'Outro','Fora',1,1);
 CREATE TABLE t0_diario(data date,rm text,sc text,total_pedidos int,t0_ok int);
 INSERT INTO t0_diario VALUES ('2026-10-27','Orlean','Ana',10,7),('2026-10-27','Outro','Fora',100,0);
 CREATE TABLE capotamento_diario(data date,rm text,coordenador text,supervisor text,status_risco text);

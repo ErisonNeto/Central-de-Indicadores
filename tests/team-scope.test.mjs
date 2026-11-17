@@ -5,7 +5,7 @@ import {monthlyResults} from '../lib/monthly.js';
 import {teamScope} from '../lib/team-scope.js';
 const db=new PGlite();
 await db.exec(`
-CREATE TABLE entregas(data_sla date,codigo_base int,rm text,coordenador text,supervisor text,no_prazo bool);
+CREATE TABLE sla_resumo_diario(data_sla date,codigo_base int,rm text,sc text,qtd_a_entregar int,qtd_no_prazo int);
 CREATE TABLE t0_diario(data date,rm text,sc text,total_pedidos int,t0_ok int);
 CREATE TABLE capotamento_diario(data date,rm text,coordenador text,supervisor text,status_risco text);
 CREATE TABLE shipping_time_diario(data date,codigo_base int,sc text,pacotes int,etapa_6_h numeric,etapa_7_h numeric,etapa_8_h numeric);
@@ -21,7 +21,7 @@ async function insert(table,values){await db.query(`INSERT INTO ${table} VALUES 
 async function seed(name,code,supervisor=null){
  await insert('jt_1bd_gestao',[String(code),rm,name,'S/C',name,supervisor]);
  for(const d of dates){
-  await insert('entregas',[d,code,rm,name,supervisor,true]);
+  await insert('sla_resumo_diario',[d,code,rm,name,10,9]);
   await insert('t0_diario',[d,rm,name,10,7]);
   await insert('capotamento_diario',[d,rm,name,supervisor,'NORMAL']);
   await insert('shipping_time_diario',[d,code,name,10,10,1,2]);
@@ -40,7 +40,7 @@ const monthlyBaseline={};for(const k of kinds)monthlyBaseline[k]=clean(await mon
 await seed('  darley  wallace\tCUNHA\nQUARESMA  ',99);
 for(const k of kinds){assert.deepEqual(clean(await readDirect(k,now,query)),baseline[k],k+' must exclude all Darley totals/history/S/C');}
 // Supervisor assignment must also remove the record, including a shared coordinator.
-await db.exec(`UPDATE entregas SET coordenador='Ana',supervisor='DARLEY WALLACE CUNHA QUARESMA' WHERE codigo_base=99;
+await db.exec(`UPDATE sla_resumo_diario SET sc='DARLEY WALLACE CUNHA QUARESMA' WHERE codigo_base=99;
 UPDATE capotamento_diario SET supervisor=coordenador,coordenador='Ana' WHERE coordenador LIKE '%darley%';
 UPDATE jt_arbitragem_ocorrencias SET supervisor=coordenador,coordenador='Ana' WHERE coordenador LIKE '%darley%';
 UPDATE jt_1bd_gestao SET supervisor=sc,sc='Ana',coordenador='Ana' WHERE base_chave='99';

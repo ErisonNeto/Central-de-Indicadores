@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 import {aggregate,mergePeriods,scResults} from '../lib/sc.js';
-const grouped=aggregate([{coordenador:'Ana',supervisor:'Bia',pedidos:100,sla:.9},{coordenador:'Ana',supervisor:'Caio',pedidos:900,sla:1}],'sla');
+const grouped=aggregate([{sc:'Ana',pedidos:100,sla:.9},{sc:'Ana',pedidos:900,sla:1},{sc:'Bia',pedidos:5,sla:.5}],'sla');
 assert.equal(grouped.find(x=>x.name==='Ana').value,99);
-assert.equal(grouped.find(x=>x.name==='Bia').value,90);
+assert.equal(grouped.find(x=>x.name==='Bia').value,50);
 assert.equal(mergePeriods({rows:[{name:'Ana',role:'S/C',value:90}]},{rows:[{name:'Bia',role:'S/C',value:95}]}).length,2);
 const calls=[];
-const mock=async url=>{const u=new URL(url);calls.push(u);return {ok:true,json:async()=>u.pathname==='/api/filtros'?{rms:['ORLEAN'],responsaveis:[]}:u.pathname==='/api/ranking-bases'?[{codigo_base:123,coordenador:'Ana',supervisor:'Bia',pedidos:10,sla:1}]:[{codigo_base:123,base:'A',sc:'Ana',cidade:'Belém',pacotes:10,horas:10},{codigo_base:999,base:'B',sc:'Fora do Orlean',cidade:'Belém',pacotes:90,horas:100}]}};
+const mock=async url=>{const u=new URL(url);calls.push(u);return {ok:true,json:async()=>u.pathname==='/api/filtros'?{rms:['ORLEAN'],responsaveis:[]}:u.pathname==='/api/ranking-bases'?[{codigo_base:123,focal:'Ana',pedidos:10,sla:1}]:[{codigo_base:123,base:'A',sc:'Ana',cidade:'Belém',pacotes:10,horas:10},{codigo_base:999,base:'B',sc:'Fora do Orlean',cidade:'Belém',pacotes:90,horas:100}]}};
 const shipping=await scResults('shipping',new Date('2026-10-27T12:00:00Z'),mock);
 assert.equal(shipping.rows.length,1);assert.equal(shipping.rows[0].day.value,30);
 assert(calls.filter(x=>x.pathname==='/api/ranking-bases').every(x=>x.searchParams.get('rm')==='ORLEAN'));

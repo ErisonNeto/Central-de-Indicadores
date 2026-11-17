@@ -70,3 +70,9 @@ Validação: testes SQL com PGlite para ponderação, calendário, lacunas, snap
 O card CSAT e a aba Mensal por S/C consultam `public.jt_csat_registros` diretamente pela JT API (`/query`), sem replicar avaliações ou expor tickets/tracking. A tabela deve existir no PostgreSQL `jt_indicadores`, com permissão SELECT para a conta da API.
 
 Taxa = avaliações positivas (`avaliacao=1`) / total (`0` e `1`). Dia e mês seguem data da avaliação (coluna H), referência D-2. Semanas oficiais por `semana_id` da coluna D, independentemente da semana da coluna H. Sem meta definida: dados ausentes aparecem como indisponíveis, nunca 0%. Escopo R/M Orlean com exclusão Darley/Middle Mile e S/C registrado na importação.
+
+## SLA — fonte única Resumo JMS (17/11/2026)
+
+O indicador SLA na Central e na aba Mensal por S/C consulta apenas `public.sla_resumo_diario` (colunas `qtd_no_prazo` [N], `qtd_a_entregar` [K], `data_sla`, `sc`, `rm`). Calcula `100*SUM(qtd_no_prazo)/SUM(qtd_a_entregar)`; nunca usa média simples de percentuais, contagem de linhas ou a tabela antiga `entregas`. O Shipping também obtém dessa tabela os códigos de bases do Orlean para o vínculo regional. Não existe fallback automático: se a tabela estiver indisponível na API J&T, o indicador sinaliza falha.
+
+Conferência de referência (01–16/11/2026, painel oficial): 1.053.660 no prazo / 1.099.337 a entregar = 95,85%. O recorte da Central continua sendo R/M Orlean e exclui Middle Mile. Em caso de diferença, conferir se o filtro do painel oficial também está em Orlean.
