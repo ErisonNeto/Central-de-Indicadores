@@ -25,7 +25,7 @@ INSERT INTO jt_arbitragem_ocorrencias VALUES ('Avaria','Orlean','2026-11-01',nul
 await db.exec(`CREATE SCHEMA jt_operacao;
 CREATE TABLE jt_operacao.vw_gestao_colaboradores_atual(estacao_no text PRIMARY KEY,responsavel_regiao text,coordenador text,supervisor text);
 INSERT INTO jt_operacao.vw_gestao_colaboradores_atual VALUES
-('1','Orlean',NULL,'Ana'),('2','Orlean','Ana',NULL),('3','Outro','Fora',NULL);
+('1','ORLEAN DA SILVA DO NASCIMENTO',NULL,'Ana'),('2','Orlean','Ana',NULL),('3','Outro','Fora',NULL);
 ALTER TABLE t0_diario ADD COLUMN codigo_base text;
 UPDATE t0_diario SET codigo_base=CASE WHEN rm='Outro' THEN '3' ELSE '1' END;
 ALTER TABLE jt_1bd_gestao ADD COLUMN codigo text;
