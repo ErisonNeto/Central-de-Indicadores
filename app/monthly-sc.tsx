@@ -90,7 +90,8 @@ export default function MonthlySc() {
       setUpdated("");
       loadedMonth.current = month;
     }
-    const queue = monthlyMetrics;
+    // Workers consume their own queue; the table and future loads need the catalog intact.
+    const queue = [...monthlyMetrics];
     async function worker() {
       while (queue.length && !abort.signal.aborted) {
         const metric = queue.shift()!;
