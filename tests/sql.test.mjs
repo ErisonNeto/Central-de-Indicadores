@@ -5,13 +5,18 @@ const db=new PGlite();
 await db.exec(`
 CREATE TABLE sla_resumo_diario(data_sla date,codigo_base int,rm text,sc text,qtd_a_entregar integer,qtd_no_prazo integer);
 INSERT INTO sla_resumo_diario VALUES ('2026-10-27',1,'Orlean','Ana',2,1),('2026-10-26',2,'Orlean','Ana',1,1),('2026-10-27',3,'Outro','Fora',1,1);
-CREATE TABLE t0_diario(data date,rm text,sc text,total_pedidos int,t0_ok int);
-INSERT INTO t0_diario VALUES ('2026-10-27','Orlean','Ana',10,7),('2026-10-27','Outro','Fora',100,0);
-CREATE TABLE capotamento_diario(data date,rm text,coordenador text,supervisor text,status_risco text);
-INSERT INTO capotamento_diario VALUES ('2026-10-27','Orlean','Pricila',null,'ALERTA'),('2026-10-27','Orlean','Ana',null,'NORMAL'),('2026-10-27','Outro','Fora',null,'CAPOTADA');
+CREATE TABLE t0_diario(data date,codigo_base int,rm text,sc text,total_pedidos int,t0_ok int);
+INSERT INTO t0_diario VALUES ('2026-10-27',4,'Orlean','Ana',10,7),('2026-10-27',3,'Outro','Fora',100,0);
+CREATE TABLE capotamento_diario(data date,codigo_base int,rm text,coordenador text,supervisor text,status_risco text);
+INSERT INTO capotamento_diario VALUES ('2026-10-27',5,'Orlean','Pricila',null,'ALERTA'),('2026-10-27',6,'Orlean','Ana',null,'NORMAL'),('2026-10-27',3,'Outro','Fora',null,'CAPOTADA');
 CREATE TABLE shipping_time_diario(data date,codigo_base int,sc text,pacotes int,etapa_6_h numeric,etapa_7_h numeric,etapa_8_h numeric);
 INSERT INTO shipping_time_diario VALUES ('2026-10-27',1,'Ana',10,10,5,5),('2026-10-27',3,'Fora',100,100,100,100),('2026-10-26',2,'Bia',90,20,10,10);
 `);
+await db.exec(`CREATE SCHEMA jt_operacao;
+CREATE TABLE jt_operacao.vw_gestao_colaboradores_atual(estacao_no text PRIMARY KEY,responsavel_regiao text,coordenador text,supervisor text);
+INSERT INTO jt_operacao.vw_gestao_colaboradores_atual VALUES
+('1','Orlean','Ana',NULL),('2','Orlean','Bia',NULL),('3','Outro','Fora',NULL),
+('4','Orlean','Ana',NULL),('5','Orlean','Pricila',NULL),('6','Orlean','Ana',NULL);`);
 const query=async(_,sql,params)=>(await db.query(sql,params)).rows;
 const now=new Date('2026-10-28T12:00:00Z');
 for(const [kind,day,month] of [['sla',50,200/3],['t0',70,70],['capotamento',50,50],['shipping',20,38]]){
@@ -22,11 +27,11 @@ for(const [kind,day,month] of [['sla',50,200/3],['t0',70,70],['capotamento',50,5
  console.log(kind+': actual SQL executed, weighted values and Orlean scope passed');
 }
 await db.exec(`
-CREATE TABLE sem_mov_retidos_detalhe(indicador text,data date,rm text,sc text,aging_valor int,pedidos int);
+CREATE TABLE sem_mov_retidos_detalhe(indicador text,data date,base_codigo text,rm text,sc text,aging_valor int,pedidos int);
 INSERT INTO sem_mov_retidos_detalhe VALUES
-('sem_mov','2026-10-27','Orlean','Ana',3,100),('sem_mov','2026-10-27','Orlean','Ana',10,5),
-('sem_mov','2026-10-27','Orlean','Bia',11,9),('sem_mov','2026-10-27','Outro','Fora',15,100),
-('retidos','2026-10-27','Orlean','Bia',4,2),('retidos','2026-10-26','Orlean','Bia',12,7);`);
+('sem_mov','2026-10-27','1','Orlean','Ana',3,100),('sem_mov','2026-10-27','1','Orlean','Ana',10,5),
+('sem_mov','2026-10-27','2','Orlean','Bia',11,9),('sem_mov','2026-10-27','3','Outro','Fora',15,100),
+('retidos','2026-10-27','2','Orlean','Bia',4,2),('retidos','2026-10-26','2','Orlean','Bia',12,7);`);
 for(const [kind,day,overTen,month] of [['sem_mov',14,9,14],['retidos',2,0,9]]){
  const result=await readDirect(kind,now,query);
  assert.equal(result.indicator.day.value,day);

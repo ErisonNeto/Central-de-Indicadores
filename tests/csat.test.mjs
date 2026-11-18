@@ -15,6 +15,17 @@ INSERT INTO jt_csat_registros VALUES
 ('7','2026-10-28','2026-W44','ORLEAN DA SILVA DO NASCIMENTO',null,'Beto','Beto','Supervisor',1),
 ('8','2026-11-03','2026-W45','ORLEAN DA SILVA DO NASCIMENTO','Darley Wallace Cunha Quaresma',null,'Darley Wallace Cunha Quaresma','Coordenador',0),
 ('9','2026-11-03','2026-W45','OUTRA RM','Fora',null,'Fora','Coordenador',0);`);
+await db.exec(`CREATE SCHEMA jt_operacao;
+CREATE TABLE jt_operacao.vw_gestao_colaboradores_atual(estacao_no text PRIMARY KEY,responsavel_regiao text,coordenador text,supervisor text);
+INSERT INTO jt_operacao.vw_gestao_colaboradores_atual VALUES
+('1','ORLEAN DA SILVA DO NASCIMENTO','Ana',NULL),
+('2','ORLEAN DA SILVA DO NASCIMENTO',NULL,'Beto'),
+('3','ORLEAN DA SILVA DO NASCIMENTO','Darley Wallace Cunha Quaresma',NULL),
+('9','OUTRA RM','Fora',NULL);
+ALTER TABLE jt_csat_registros ADD COLUMN codigo text;
+UPDATE jt_csat_registros SET codigo=CASE WHEN coordenador='Ana' THEN '1'
+ WHEN supervisor='Beto' THEN '2'
+ WHEN coordenador LIKE 'Darley%' THEN '3' ELSE '9' END;`);
 const query=async(_,sql,args)=>(await db.query(sql,args)).rows;
 const now=new Date('2026-11-05T15:00:00Z'),r=await readDirect('csat',now,query);
 assert.equal(r.indicator.periods.reference,'2026-11-03');

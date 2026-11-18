@@ -12,6 +12,15 @@ INSERT INTO jt_arbitragem_ocorrencias VALUES
 ('PNR','ORLEAN',null,null,'2026-11-06','Dani',null,'Apelação',700),
 ('Avaria','OUTRO','2026-11-06',null,null,'Fora',null,'Processo encerrado',99999),
 ('Avaria','ORLEAN','2026-11-09',null,null,'Futuro',null,'Processo encerrado',99999);`);
+await db.exec(`CREATE SCHEMA jt_operacao;
+CREATE TABLE jt_operacao.vw_gestao_colaboradores_atual(estacao_no text PRIMARY KEY,responsavel_regiao text,coordenador text,supervisor text);
+INSERT INTO jt_operacao.vw_gestao_colaboradores_atual VALUES
+('A','ORLEAN','Ana','Beto'),('B','ORLEAN','Ana',NULL),
+('E','ORLEAN','Caio',NULL),('P','ORLEAN','Dani',NULL),('O','OUTRO','Fora',NULL);
+ALTER TABLE jt_arbitragem_ocorrencias ADD COLUMN codigo_base text;
+UPDATE jt_arbitragem_ocorrencias SET codigo_base=CASE WHEN rm='OUTRO' THEN 'O'
+ WHEN tipo='Extravio' THEN 'E' WHEN tipo='PNR' THEN 'P'
+ WHEN supervisor='Beto' THEN 'A' ELSE 'B' END;`);
 const query=async(k,sql,args)=>(await db.query(sql,args)).rows;
 const now=new Date('2026-11-07T15:00Z');
 const a=await readDirect('avaria',now,query);
