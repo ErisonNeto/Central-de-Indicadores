@@ -6,7 +6,7 @@ export async function GET(request: Request) {
  if (!Object.hasOwn(sources, kind)) return Response.json({error:'Indicador inválido'}, {status:400});
  try {
   const result = (await directResults(kind)).indicator;
-  return Response.json({...result, source:'jt-api'}, {headers:{'Cache-Control':'private, max-age=180'}});
+  return Response.json({...result, source:'jt-api'}, {headers:{'Cache-Control': ['1bd','5cd','csat'].includes(kind) ? 'private, no-store' : 'private, max-age=180'}});
  } catch (error) {
   return Response.json({error:error instanceof Error ? error.message : 'Consulta indisponível'}, {status:502});
  }
