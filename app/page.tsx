@@ -323,6 +323,30 @@ export default function Home() {
   }, [view]);
   useEffect(() => {
     if (view !== "indicators") return;
+    // Indicadores de qualidade mudam apos importacoes operacionais: revalidar
+    // apenas estes tres cards a cada minuto, sem recalcular todos os outros.
+    const abort = new AbortController();
+    let running = false;
+    const timer = setInterval(async () => {
+      if (running || abort.signal.aborted) return;
+      running = true;
+      try {
+        await Promise.all(["1bd", "5cd", "csat"].map(async (kind) => {
+          try {
+            const result = await fetchJson("/api/indicator?kind=" + kind, abort.signal);
+            if (!abort.signal.aborted) setData((old) => ({ ...old, [kind]: result }));
+          } catch {
+            // Preserva o ultimo resultado ate a proxima consulta bem-sucedida.
+          }
+        }));
+      } finally {
+        running = false;
+      }
+    }, 60000);
+    return () => { clearInterval(timer); abort.abort(); };
+  }, [view]);
+  useEffect(() => {
+    if (view !== "indicators") return;
     const abort = new AbortController();
     setLoading(true);
     const queue = [...panels];
