@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { fetchJson } from "./client-data";
 import { displayChange } from "../lib/display-change.js";
 import { monthlyMetrics, combineMonthly } from "../lib/monthly-series.js";
+import { metricWithMonthlyGoal } from "../lib/monthly-kpi-goals.js";
+import OfficialGoals from "./official-goals";
 type Metric = (typeof monthlyMetrics)[number];
 const format = (value: number | null | undefined, m: Metric) =>
   value == null
@@ -136,12 +138,13 @@ export default function MonthlySc() {
     }
   }, [selection]);
   const rows = combineMonthly(Object.values(data));
+  const displayMetrics = monthlyMetrics.map((m) => metricWithMonthlyGoal(m, month));
   const normalize = (s: string) =>
     s
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .toLowerCase();
-  const metric = monthlyMetrics.find((m) => m.id === sort)!;
+  const metric = displayMetrics.find((m) => m.id === sort)!;
   const shown = rows
     .filter((r: any) => normalize(r.name).includes(normalize(search)))
     .sort((a: any, b: any) => {
@@ -158,14 +161,14 @@ export default function MonthlySc() {
   let good = 0,
     bad = 0;
   for (const r of shown)
-    for (const m of monthlyMetrics) {
+    for (const m of displayMetrics) {
       const s = status(r.metrics[m.id]?.current, m);
       good += Number(s === "Dentro da meta");
       bad += Number(s === "Fora da meta");
     }
-  const errors = monthlyMetrics.filter((m) => data[m.id]?.error);
+  const errors = displayMetrics.filter((m) => data[m.id]?.error);
   const selectedPerson = rows.find((r: any) => r.key === selection?.key),
-    selectedMetric = monthlyMetrics.find((m) => m.id === selection?.kind),
+    selectedMetric = displayMetrics.find((m) => m.id === selection?.kind),
     selected = selection && selectedPerson?.metrics[selection.kind];
   return (
     <section className="monthly-view" aria-label="Visão mensal por S/C">
@@ -198,7 +201,7 @@ export default function MonthlySc() {
         <div>
           <small>Consultas concluídas</small>
           <strong>
-            {Object.values(data).filter((r: any) => !r.error).length} / 11
+            {Object.values(data).filter((r: any) => !r.error).length} / {displayMetrics.length}
           </strong>
           <span>
             {loading
@@ -210,6 +213,7 @@ export default function MonthlySc() {
           </span>
         </div>
       </div>
+      <OfficialGoals month={month} />
       <div className="month-controls">
         <label>
           Mês
@@ -241,7 +245,7 @@ export default function MonthlySc() {
         <label>
           Pior → melhor
           <select value={sort} onChange={(e) => setSort(e.target.value)}>
-            {monthlyMetrics
+            {displayMetrics
               .map((m) => (
                 <option key={m.id} value={m.id}>
                   {m.name}
@@ -254,7 +258,7 @@ export default function MonthlySc() {
         </button>
       </div>
       <p className="month-help">
-        Todos os valores são mensais. As setas comparam o acumulado até uma data
+        Todos os valores são mensais. Em novembro/2026, a meta de 1BD é 85% conforme o KPI GP-PA; em outros meses, permanece a configuração preexistente até recebermos o KPI correspondente. As setas comparam o acumulado até uma data
         com o acumulado até o dia anterior. Clique em uma célula para ver todos
         os dias. Percentuais variam em pontos percentuais (p.p.).
       </p>
@@ -279,7 +283,7 @@ export default function MonthlySc() {
               <th scope="col">
                 S/C<small>Nome do responsável</small>
               </th>
-              {monthlyMetrics.map((m) => (
+              {displayMetrics.map((m) => (
                 <th
                   scope="col"
                   key={m.id}
@@ -324,7 +328,7 @@ export default function MonthlySc() {
                       .join(" / ") || "S/C"}
                   </small>
                 </th>
-                {monthlyMetrics.map((m) => {
+                {displayMetrics.map((m) => {
                   const record = r.metrics[m.id],
                     p = record?.current;
                   return (
@@ -381,10 +385,10 @@ export default function MonthlySc() {
             ))}
             {!shown.length && (
               <tr>
-                <td colSpan={13} className="month-empty">
+                <td colSpan={displayMetrics.length + 1} className="month-empty">
                   {loading
                     ? "Carregando os responsáveis…"
-                    : errors.length === 11
+                    : errors.length === displayMetrics.length
                       ? "Não foi possível carregar as fontes. Tente atualizar."
                       : search
                         ? "Nenhum S/C encontrado para esta busca."
@@ -497,7 +501,7 @@ export default function MonthlySc() {
           ocorrências.
         </p>
         <ul>
-          {monthlyMetrics.map((m) => (
+          {displayMetrics.map((m) => (
             <li key={m.id}>
               <b>{m.name}:</b> {m.note}
             </li>
