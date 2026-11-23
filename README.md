@@ -76,3 +76,17 @@ Taxa = avaliações positivas (`avaliacao=1`) / total (`0` e `1`). Dia e mês se
 O indicador SLA na Central e na aba Mensal por S/C consulta apenas `public.sla_resumo_diario` (colunas `qtd_no_prazo` [N], `qtd_a_entregar` [K], `data_sla`, `sc`, `rm`). Calcula `100*SUM(qtd_no_prazo)/SUM(qtd_a_entregar)`; nunca usa média simples de percentuais, contagem de linhas ou a tabela antiga `entregas`. O Shipping também obtém dessa tabela os códigos de bases do Orlean para o vínculo regional. Não existe fallback automático: se a tabela estiver indisponível na API J&T, o indicador sinaliza falha.
 
 Conferência de referência (01–16/11/2026, painel oficial): 1.053.660 no prazo / 1.099.337 a entregar = 95,85%. O recorte da Central continua sendo R/M Orlean e exclui Middle Mile. Em caso de diferença, conferir se o filtro do painel oficial também está em Orlean.
+
+### C2C
+
+A Central consulta `public.c2c_bases` e `public.c2c_remessas` pela API J&T existente,
+sem depender do carregamento do painel C2C. Considera o cadastro **atual** de bases
+ativas do Orlean, excluindo Darley. Remessas são deduplicadas antes da agregação.
+O card e os S/C mostram atingimento: no mês, pacotes / (30 × bases ativas); no dia
+ou semana, pacotes / (bases × dias até o dia 30), conforme a regra do painel C2C.
+100% significa meta atingida; acima de 100% não é limitado. Semanas são de segunda
+a domingo. A tabela mensal mantém a meta integral de 30 por base em todo o histórico.
+Períodos totalmente sem remessas ficam sem resultado: não há manifesto de importação
+para distinguir ausência de carga de zero movimento. Os dias indicam datas com
+remessas, não cobertura confirmada de importação. Alterações no cadastro atual de
+bases também afetam consultas históricas. Link: https://c2c-e9f0.onrender.com/.

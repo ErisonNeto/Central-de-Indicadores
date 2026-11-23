@@ -4,6 +4,7 @@ import { fetchJson } from "./client-data";
 import { ClaimsSc } from "./claims-view";
 import { Users, RefreshCw, ArrowUpRight } from "lucide-react";
 const options = [
+  {id: "c2c", name: "C2C", unit: "%", url: "https://c2c-e9f0.onrender.com/"},
   {
     id: "1bd",
     name: "1BD",
@@ -85,6 +86,7 @@ function Result({
             ? "● Atingiu"
             : "● Não atingiu"}
       </span>
+      {item.target !== undefined && (<small>{item.count} / {item.target} pacotes · {item.bases} bases</small>)}
       {item.positives !== undefined && (
         <small>{Number(item.positives).toLocaleString('pt-BR')} positivas · {Number(item.negatives).toLocaleString('pt-BR')} negativas</small>
       )}

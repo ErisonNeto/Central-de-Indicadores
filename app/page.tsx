@@ -20,6 +20,11 @@ import {
 } from "lucide-react";
 const panels = [
   {
+    id: "c2c", title: "C2C", label: "Atingimento da meta de captação", icon: PackageCheck,
+    url: "https://c2c-e9f0.onrender.com/", unit: "%",
+    note: "Meta mensal: 30 pacotes por base ativa · dia e semana: 1 por base/dia até o dia 30 · 100% = meta atingida",
+  },
+  {
     id: "sla",
     title: "SLA – Regional",
     label: "Entregas dentro do prazo",
@@ -176,6 +181,7 @@ function Metric({
                 ? "● Fora da meta"
                 : data.info || "● Sem meta cadastrada"}
       </div>
+      {has && data.target !== undefined && (<small>Meta: {data.target.toLocaleString("pt-BR")} pacotes · {data.bases} bases ativas</small>)}
       {has && data.positives !== undefined && (
         <small>{Number(data.positives).toLocaleString('pt-BR')} positivas · {Number(data.negatives).toLocaleString('pt-BR')} negativas</small>
       )}
