@@ -4,7 +4,7 @@ import {readDirect} from '../lib/direct.js';
 import {c2cDays} from '../lib/c2c.js';
 const db=new PGlite();
 await db.exec(`CREATE TABLE c2c_bases(codigo_base text PRIMARY KEY,rm text,sc text,ativo boolean);
-CREATE TABLE c2c_remessas(remessa text,data_envio date,base_key text);
+CREATE TABLE c2c_remessas(remessa text,data_envio text,base_key text);
 INSERT INTO c2c_bases VALUES
 ('A','ORLEAN DA SILVA DO NASCIMENTO','Ana',true),
 ('B','ORLEAN DA SILVA DO NASCIMENTO','Ana',true),

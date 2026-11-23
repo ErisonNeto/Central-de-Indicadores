@@ -2,10 +2,12 @@
 .indicator-grid {
   display: grid;
   gap: 20px;
-  align-items: start;
+  align-items: stretch;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 .indicator-card {
+  display: flex;
+  flex-direction: column;
   background: white;
   border: 1px solid #e4e6eb;
   border-radius: 10px;
@@ -22,6 +24,7 @@
   box-shadow: 0 7px 20px #17223808;
 }
 .card-head {
+  min-height: 42px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -75,6 +78,8 @@
   line-height: 1.4;
 }
 .goal {
+  margin-top: auto;
+  padding-top: 12px;
   display: flex;
   gap: 6px;
   padding-bottom: 20px;
@@ -540,4 +545,14 @@ button:focus-visible {
   .sc-table {
     min-width: 600px;
   }
+}
+
+/* Keep actions aligned across cards without fixing content heights. */
+.goal > svg, .card-actions svg { flex-shrink: 0; }
+.indicator-card > .subtitle { min-height: 2.8em; }
+.indicator-card > .period-grid { flex: 1; align-content: start; }
+.card-actions > * { min-width: 0; }
+.card-actions .open, .expand-sc { overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .indicator-card > .subtitle { min-height: 0; }
 }

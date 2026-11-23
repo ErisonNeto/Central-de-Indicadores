@@ -4,7 +4,6 @@ import { fetchJson } from "./client-data";
 import { ClaimsSc } from "./claims-view";
 import { Users, RefreshCw, ArrowUpRight } from "lucide-react";
 const options = [
-  {id: "c2c", name: "C2C", unit: "%", url: "https://c2c-e9f0.onrender.com/"},
   {
     id: "1bd",
     name: "1BD",
@@ -42,6 +41,7 @@ const options = [
     unit: "%",
     url: "https://j-t-capotamento.onrender.com/",
   },
+  {id: "c2c", name: "C2C", unit: "%", url: "https://c2c-e9f0.onrender.com/"},
 ];
 const f = (v: number) =>
   v.toLocaleString("pt-BR", {

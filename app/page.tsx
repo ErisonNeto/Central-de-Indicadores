@@ -20,11 +20,6 @@ import {
 } from "lucide-react";
 const panels = [
   {
-    id: "c2c", title: "C2C", label: "Atingimento da meta de captação", icon: PackageCheck,
-    url: "https://c2c-e9f0.onrender.com/", unit: "%",
-    note: "Meta mensal: 30 pacotes por base ativa · dia e semana: 1 por base/dia até o dia 30 · 100% = meta atingida",
-  },
-  {
     id: "sla",
     title: "SLA – Regional",
     label: "Entregas dentro do prazo",
@@ -131,6 +126,11 @@ const panels = [
     url: "https://j-t-avaria-extravio-pnr.onrender.com/?indicador=PNR",
     unit: "BRL",
     note: "Sem meta fixa · fechamento do ticket · semana e mês parciais até hoje. Revogados e apelações em conferência.",
+  },
+  {
+    id: "c2c", title: "C2C", label: "Atingimento da meta de captação", icon: PackageCheck,
+    url: "https://c2c-e9f0.onrender.com/", unit: "%",
+    note: "Meta mensal: 30 pacotes por base ativa · dia e semana: 1 por base/dia até o dia 30 · 100% = meta atingida",
   },
 ];
 const fmt = (n: number) =>
