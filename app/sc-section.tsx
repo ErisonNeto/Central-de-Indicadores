@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { fetchJson } from "./client-data";
 import { ClaimsSc } from "./claims-view";
+import { officialMonthlyGoal } from "../lib/monthly-kpi-goals.js";
 import { Users, RefreshCw, ArrowUpRight } from "lucide-react";
 const options = [
   {
@@ -142,6 +143,9 @@ export default function ScSection({ kind }: { kind: string }) {
     return () => abort.abort();
   }, [kind, revision]);
   const selected = options.find((x) => x.id === kind)!;
+  const monthGoal = kind === "1bd"
+    ? officialMonthlyGoal(kind, data?.periods?.start) ?? data?.month?.goal
+    : data?.month?.goal;
   const rows = (data?.rows || []).filter((r: any) =>
     (r.name + " " + r.role)
       .toLocaleLowerCase("pt-BR")
@@ -271,7 +275,7 @@ export default function ScSection({ kind }: { kind: string }) {
             Meta do mês{" "}
             <b>
               {goal(
-                data?.month?.goal ??
+                monthGoal ??
                   (kind === "1bd"
                     ? 80
                     : kind === "sla"
@@ -374,7 +378,7 @@ export default function ScSection({ kind }: { kind: string }) {
                       <td>
                         <Result
                           item={r.month}
-                          goal={data?.month?.goal}
+                          goal={monthGoal}
                           unit={selected.unit}
                           inverse={
                             kind === "shipping" || kind === "capotamento"
