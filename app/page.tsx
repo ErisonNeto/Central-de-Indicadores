@@ -5,6 +5,7 @@ import { displayChange } from "../lib/display-change.js";
 import { ClaimsTiles } from "./claims-view";
 import ScSection from "./sc-section";
 import MonthlySc from "./monthly-sc";
+import { officialMonthlyGoal } from "../lib/monthly-kpi-goals.js";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -80,7 +81,7 @@ const panels = [
     icon: Target,
     url: "https://j-t-1bd-5cd-csat.onrender.com/",
     unit: "%",
-    note: "Referência D-2 · meta ≥ 80% · avaliações concluídas / total de avaliações",
+    note: "Referência D-2 · meta diária ≥ 80% · avaliações concluídas / total de avaliações",
   },
   {
     id: "5cd",
@@ -641,7 +642,14 @@ export default function Home() {
                                     : "Acumulado do mês"}
                                 </span>
                                 <Metric
-                                  data={d?.month}
+                                  data={
+                                    p.id === "1bd" && d?.month && d?.periods?.start
+                                      ? {
+                                          ...d.month,
+                                          goal: officialMonthlyGoal("1bd", d.periods.start) ?? d.month.goal,
+                                        }
+                                      : d?.month
+                                  }
                                   unit={p.unit}
                                   inverse={
                                     p.id === "shipping" ||
@@ -653,7 +661,9 @@ export default function Home() {
                           )}
                           <div className="goal">
                             <Target size={13} />
-                            {p.note}
+                            {p.id === "1bd" && d?.periods?.start?.slice(0, 7) === "2026-11"
+                              ? p.note + " · meta mensal KPI GP-PA ≥ 85% (mínimo 80%)"
+                              : p.note}
                           </div>
                           <div className="card-actions">
                             <a
