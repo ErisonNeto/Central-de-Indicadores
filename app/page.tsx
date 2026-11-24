@@ -1,4 +1,5 @@
 "use client";
+import { kpiTone, kpiLabel } from "../lib/kpi-status.js";
 import { useEffect, useState } from "react";
 import { fetchJson } from "./client-data";
 import { displayChange } from "../lib/display-change.js";
@@ -27,7 +28,7 @@ const panels = [
     icon: PackageCheck,
     url: "https://jandt-sla-dashboard.onrender.com/",
     unit: "%",
-    note: "Meta diária ≥ 95% · mensal ≥ 97%",
+    note: "Meta ≥ 97% · mínimo ≥ 93%",
   },
   {
     id: "t0",
@@ -131,7 +132,7 @@ const panels = [
   {
     id: "c2c", title: "C2C", label: "Atingimento da meta de captação", icon: PackageCheck,
     url: "https://c2c-e9f0.onrender.com/", unit: "%",
-    note: "Meta mensal: 30 pacotes por base ativa · dia e semana: 1 por base/dia até o dia 30 · 100% = meta atingida",
+    note: "Meta mensal: 30 · mínimo: 20 pacotes por base ativa · dia e semana: 1 por base/dia até o dia 30 · 100% = meta atingida",
   },
 ];
 const fmt = (n: number) =>
@@ -150,17 +151,12 @@ function Metric({
   inverse: boolean;
 }) {
   const has = typeof data?.value === "number" && Number.isFinite(data.value);
-  const status =
-    has && typeof data.goal === "number"
-      ? inverse
-        ? data.value <= data.goal
-        : data.value >= data.goal
-      : null;
+  const status = kpiTone(data?.value, data?.goal, data?.minimum, !inverse);
   return (
     <>
       <div
         className={
-          "number " + (status === true ? "good" : status === false ? "bad" : "")
+          "number " + status
         }
       >
         {has ? fmt(data.value) : "—"}
@@ -169,17 +165,14 @@ function Metric({
       <div
         className={
           "state " +
-          (status === true ? "green" : status === false ? "red" : "neutral")
+          status
         }
       >
         {!data
           ? "Consultando…"
           : !has
             ? data.message || "Sem dados no período"
-            : status === true
-              ? "● Dentro da meta"
-              : status === false
-                ? "● Fora da meta"
+            : status !== "neutral" ? "● " + kpiLabel(status)
                 : data.info || "● Sem meta cadastrada"}
       </div>
       {has && data.target !== undefined && (<small>Meta: {data.target.toLocaleString("pt-BR")} pacotes · {data.bases} bases ativas</small>)}
@@ -211,6 +204,8 @@ type Sample = {
   days: number;
   elapsed?: number;
   weekId?: string;
+  goal?: number | null;
+  minimum?: number | null;
 };
 function Change({
   current,
@@ -255,7 +250,7 @@ function HistoryTile({
             ? date(sample.to)
             : date(sample.from) + " – " + date(sample.to)}
       </small>
-      <div className="number">
+      <div className={"number " + kpiTone(sample.value, sample.goal, sample.minimum, sample.goal !== 0)}>
         {sample.value == null ? "—" : fmt(sample.value)}
         {sample.value != null && <span>{unit}</span>}
       </div>

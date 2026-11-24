@@ -36,7 +36,7 @@
 }
 .month-summary {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 12px;
   margin: 16px 0;
 }
@@ -376,3 +376,6 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.monthly-view .warning{color:#926000;}
+.month-cell.warning{background:#fff4cf;}

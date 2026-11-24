@@ -23,7 +23,7 @@ assert.ok(Math.abs(expected-95.85)<0.01);
 assert.ok(Math.abs(sla.indicator.month.value-expected)<1e-9);
 assert.equal(sla.indicator.month.count,1099337);
 assert.equal(sla.indicator.day.count,599337);
-assert.equal(sla.indicator.day.goal,95);
+assert.equal(sla.indicator.day.goal,97);
 assert.equal(sla.indicator.month.goal,97);
 assert.equal(sla.sc.rows.length,2);
 assert.ok(!sla.sc.rows.some(r=>r.name==='Fora'||r.name==='DARLEY WALLACE CUNHA QUARESMA'));

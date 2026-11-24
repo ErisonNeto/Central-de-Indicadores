@@ -1,4 +1,5 @@
 "use client";
+import { kpiTone, kpiLabel } from "../lib/kpi-status.js";
 import { useEffect, useState } from "react";
 import { fetchJson } from "./client-data";
 import { ClaimsSc } from "./claims-view";
@@ -66,27 +67,14 @@ function Result({
     return (
       <span className="sc-empty">{error ? "Indisponível" : "Sem dados"}</span>
     );
-  const ok =
-    typeof goal === "number"
-      ? inverse
-        ? item.value <= goal
-        : item.value >= goal
-      : null;
+  const tone = kpiTone(item.value, goal, item.minimum, !inverse);
   return (
     <div className="sc-result">
       <strong>
         {f(item.value)}
         {unit}
       </strong>
-      <span className={ok === null ? "neutral" : ok ? "green" : "red"}>
-        {ok === null
-          ? unit === "h"
-            ? "Tempo médio"
-            : "Sem meta"
-          : ok
-            ? "● Atingiu"
-            : "● Não atingiu"}
-      </span>
+      <span className={tone}>{kpiLabel(tone)}</span>
       {item.target !== undefined && (<small>{item.count} / {item.target} pacotes · {item.bases} bases</small>)}
       {item.positives !== undefined && (
         <small>{Number(item.positives).toLocaleString('pt-BR')} positivas · {Number(item.negatives).toLocaleString('pt-BR')} negativas</small>
@@ -258,9 +246,9 @@ export default function ScSection({ kind }: { kind: string }) {
               {goal(
                 data?.day?.goal ??
                   (kind === "1bd"
-                    ? 80
+                    ? 85
                     : kind === "sla"
-                      ? 95
+                      ? 97
                       : kind === "t0"
                         ? 70
                         : kind === "shipping"
@@ -277,7 +265,7 @@ export default function ScSection({ kind }: { kind: string }) {
               {goal(
                 monthGoal ??
                   (kind === "1bd"
-                    ? 80
+                    ? 85
                     : kind === "sla"
                       ? 97
                       : kind === "t0"
@@ -368,11 +356,7 @@ export default function ScSection({ kind }: { kind: string }) {
                       </td>
                       {["previousDay", "previousWeek"].map((period) => (
                         <td key={period}>
-                          <strong>
-                            {typeof r[period]?.value === "number"
-                              ? f(r[period].value) + selected.unit
-                              : "—"}
-                          </strong>
+                          <Result item={r[period]} goal={data?.day?.goal} unit={selected.unit} inverse={kind === "shipping" || kind === "capotamento"} />
                         </td>
                       ))}
                       <td>

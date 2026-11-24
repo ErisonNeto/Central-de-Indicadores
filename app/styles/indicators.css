@@ -556,3 +556,7 @@ button:focus-visible {
 @media (max-width: 700px) {
   .indicator-card > .subtitle { min-height: 0; }
 }
+
+.number.warning, .state.warning, .sc-result .warning {color:#926000;}
+.state.good,.sc-result .good {color:#087f5b;}
+.state.bad,.sc-result .bad {color:#c9253c;}

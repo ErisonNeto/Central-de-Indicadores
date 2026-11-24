@@ -1,4 +1,5 @@
 "use client";
+import { kpiTone, kpiLabel } from "../lib/kpi-status.js";
 import { useEffect, useRef, useState } from "react";
 import { fetchJson } from "./client-data";
 import { displayChange } from "../lib/display-change.js";
@@ -13,20 +14,8 @@ const format = (value: number | null | undefined, m: Metric) =>
       ? value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
       : value.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + m.unit;
 const date = (s?: string) => (s ? s.slice(8, 10) + "/" + s.slice(5, 7) : "—");
-const status = (p: any, m: Metric) =>
-  p?.value == null
-    ? "Sem dados"
-    : m.goal == null
-      ? "Sem meta definida"
-      : (m.up ? p.value >= m.goal : p.value <= m.goal)
-        ? "Dentro da meta"
-        : "Fora da meta";
-const tone = (p: any, m: Metric) =>
-  status(p, m) === "Dentro da meta"
-    ? "good"
-    : status(p, m) === "Fora da meta"
-      ? "bad"
-      : "neutral";
+const tone = (p: any, m: Metric) => kpiTone(p?.value, m.goal, ('minimum' in m ? m.minimum : null), m.up);
+const status = (p: any, m: Metric) => p?.value == null ? "Sem dados" : kpiLabel(tone(p,m));
 function Variation({ point, m }: { point: any; m: Metric }) {
   const change = point?.change;
   if (!change)
@@ -159,12 +148,13 @@ export default function MonthlySc() {
         : a.name.localeCompare(b.name, "pt-BR");
     });
   let good = 0,
-    bad = 0;
+    bad = 0, warning = 0;
   for (const r of shown)
     for (const m of displayMetrics) {
       const s = status(r.metrics[m.id]?.current, m);
       good += Number(s === "Dentro da meta");
-      bad += Number(s === "Fora da meta");
+      bad += Number(s === "Fora do mínimo");
+      warning += Number(s === "Mínimo atingido · abaixo da meta");
     }
   const errors = displayMetrics.filter((m) => data[m.id]?.error);
   const selectedPerson = rows.find((r: any) => r.key === selection?.key),
@@ -193,8 +183,9 @@ export default function MonthlySc() {
           <strong className="good">{good}</strong>
           <span>Resultados com meta definida</span>
         </div>
+        <div><small>Mínimo atingido</small><strong className="warning">{warning}</strong><span>Ainda abaixo da meta</span></div>
         <div>
-          <small>Fora da meta</small>
+          <small>Fora do mínimo</small>
           <strong className="bad">{bad}</strong>
           <span>Resultados que precisam de atenção</span>
         </div>
@@ -301,6 +292,7 @@ export default function MonthlySc() {
                     {m.goal == null
                       ? "Sem meta definida"
                       : "Meta " + (m.up ? "≥ " : "≤ ") + format(m.goal, m)}
+                    {"minimum" in m && m.minimum != null && <span> · mínimo {format(m.minimum, m)}</span>}
                   </small>
                   <small>
                     {data[m.id]?.range
@@ -400,7 +392,7 @@ export default function MonthlySc() {
         </table>
       </div>
       <p className="month-help">
-        Verde = dentro da meta / melhora · Vermelho = fora da meta / piora ·
+        Verde = meta atingida / melhora · Amarelo = mínimo atingido · Vermelho = fora do mínimo / piora ·
         Cinza = sem meta, sem comparação ou sem dados. Os totais de atingimento
         contam células, não somam volumes entre funções.
       </p>
