@@ -377,5 +377,4 @@
   }
 }
 
-.monthly-view .warning{color:#926000;}
-.month-cell.warning{background:#fff4cf;}
+.monthly-view strong.warning, .month-cell.warning > strong{color:#b88600;}

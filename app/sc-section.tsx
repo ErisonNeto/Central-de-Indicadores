@@ -70,7 +70,7 @@ function Result({
   const tone = kpiTone(item.value, goal, item.minimum, !inverse);
   return (
     <div className="sc-result">
-      <strong>
+      <strong className={tone}>
         {f(item.value)}
         {unit}
       </strong>

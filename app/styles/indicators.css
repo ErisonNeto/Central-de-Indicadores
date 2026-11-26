@@ -557,6 +557,7 @@ button:focus-visible {
   .indicator-card > .subtitle { min-height: 0; }
 }
 
-.number.warning, .state.warning, .sc-result .warning {color:#926000;}
+.number.warning, .sc-result strong.warning {color:#b88600;}
+.state.warning, .sc-result span.warning {color:var(--muted, #657082);}
 .state.good,.sc-result .good {color:#087f5b;}
 .state.bad,.sc-result .bad {color:#c9253c;}
