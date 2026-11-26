@@ -100,7 +100,7 @@ const panels = [
     icon: Target,
     url: "https://j-t-1bd-5cd-csat.onrender.com/",
     unit: "%",
-    note: "Referência D-2 · avaliações positivas / total · semana oficial da coluna D · sem meta definida",
+    note: "Referência D-2 · avaliações positivas / total · semana oficial do relatório · sem meta definida",
   },
   {
     id: "avaria",

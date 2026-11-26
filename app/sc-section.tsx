@@ -392,7 +392,7 @@ export default function ScSection({ kind }: { kind: string }) {
         {kind === "5cd"
           ? "Média por dia com relatório, incluindo zero para S/C sem ocorrências em um dia disponível. Sem meta fixa."
           : kind === "csat"
-            ? "Avaliações positivas / todas as avaliações. Semana oficial pela coluna D; data diária pela coluna H. Sem meta definida."
+            ? "Avaliações positivas / todas as avaliações. Semana oficial do relatório; evolução diária pela data da avaliação. Sem meta definida."
           : kind === "1bd"
             ? "Taxa sobre todas as avaliações do período. Referência D-2."
             : kind === "shipping"
