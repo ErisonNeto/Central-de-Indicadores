@@ -15,6 +15,13 @@ await db.exec(`
  CREATE TABLE shipping_time_diario(data date,codigo_base text,sc text,pacotes int,etapa_6_h numeric,etapa_7_h numeric,etapa_8_h numeric);
  INSERT INTO shipping_time_diario VALUES ('2026-11-01','1','Ana',20,10,1,2),('2026-11-16','2','Beto',30,20,1,2),('2026-11-16','9','Fora',1000,100,50,50);
 `);
+await db.exec(`CREATE SCHEMA jt_operacao;
+CREATE TABLE jt_operacao.vw_gestao_colaboradores_atual(estacao_no text PRIMARY KEY,responsavel_regiao text,coordenador text,supervisor text);
+INSERT INTO jt_operacao.vw_gestao_colaboradores_atual VALUES
+('1','ORLEAN DA SILVA DO NASCIMENTO','Ana',NULL),
+('2','ORLEAN DA SILVA DO NASCIMENTO','Beto',NULL),
+('9','OUTRA RM','Fora',NULL),
+('3','ORLEAN DA SILVA DO NASCIMENTO','DARLEY WALLACE CUNHA QUARESMA',NULL);`);
 const query=async(_,sql,args)=>(await db.query(sql,args)).rows;
 const now=new Date('2026-11-17T12:00:00Z');
 const sla=await readDirect('sla',now,query);

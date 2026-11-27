@@ -22,6 +22,16 @@ CREATE TABLE jt_5cd_registros(data_relatorio text,base_chave text);
 INSERT INTO jt_5cd_registros VALUES ('2026-11-01','a'),('2026-11-01','a'),('2026-11-03','a');
 CREATE TABLE jt_arbitragem_ocorrencias(tipo text,rm text,fechada_em text,declarada_em text,data text,coordenador text,supervisor text,status text,valor_centavos bigint);
 INSERT INTO jt_arbitragem_ocorrencias VALUES ('Avaria','Orlean','2026-11-01',null,null,'Ana',null,'Processo encerrado',100),('Avaria','Orlean','2026-11-02',null,null,'Ana',null,'Arbitragem finalizada',200),('Avaria','Orlean','2026-11-02',null,null,'Ana',null,'Revogado',10000),('Avaria','Orlean','2026-11-06',null,null,'Ana',null,'Processo encerrado',100000);`);
+await db.exec(`CREATE SCHEMA jt_operacao;
+CREATE TABLE jt_operacao.vw_gestao_colaboradores_atual(estacao_no text PRIMARY KEY,responsavel_regiao text,coordenador text,supervisor text);
+INSERT INTO jt_operacao.vw_gestao_colaboradores_atual VALUES
+('1','ORLEAN DA SILVA DO NASCIMENTO',NULL,'Ana'),('2','Orlean','Ana',NULL),('3','Outro','Fora',NULL);
+ALTER TABLE t0_diario ADD COLUMN codigo_base text;
+UPDATE t0_diario SET codigo_base=CASE WHEN rm='Outro' THEN '3' ELSE '1' END;
+ALTER TABLE jt_1bd_gestao ADD COLUMN codigo text;
+UPDATE jt_1bd_gestao SET codigo='1';
+ALTER TABLE jt_arbitragem_ocorrencias ADD COLUMN codigo_base text;
+UPDATE jt_arbitragem_ocorrencias SET codigo_base='2';`);
 let calls=0;const query=async(_,sql,args)=>{calls++;return (await db.query(sql,args)).rows;};
 const t=await monthlyResults('t0','2026-11',now,query);assert.equal(calls,2,'one owner and one monthly query, not one per day');
 assert.equal(t.rows.length,1);const h=t.rows[0].history;
